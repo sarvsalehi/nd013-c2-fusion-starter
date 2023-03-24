@@ -113,7 +113,7 @@ def load_configs_model(model_name='darknet', configs=None):
     configs.no_cuda = True # if true, cuda is not used
     configs.gpu_idx = 0  # GPU index to use.
     configs.device = torch.device('cpu' if configs.no_cuda else 'cuda:{}'.format(configs.gpu_idx))
-
+    configs.min_iou = 0.5
     return configs
 
 
@@ -233,13 +233,15 @@ def detect_objects(input_bev_maps, model, configs):
     if len(detections) > 0:
         ## step 2 : loop over all detections
          for obj in detections:
-                _, bev_x, bev_y, z, h, bev_w, bev_l, yaw = obj
+            id, bev_x, bev_y, z, h, bev_w, bev_l, yaw = obj
+            ## step 2 : loop over all detections
+            x = bev_y / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
+            y = bev_x / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0]) - (configs.lim_y[1] - configs.lim_y[0])/2.0 
+            w = bev_w / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0]) 
+            l = bev_l / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-                x = (bev_y / configs.bev_height) * (configs.lim_x[1] - configs.lim_x[0]) + configs.lim_x[0]
-                y = (bev_x / configs.bev_width) * (configs.lim_y[1] - configs.lim_y[0]) + configs.lim_y[0]
-                w = (bev_w / configs.bev_width) * (configs.lim_y[1] - configs.lim_y[0]) 
-                l = (bev_l / configs.bev_height) * (configs.lim_x[1] - configs.lim_x[0])
-        
+            if ((x >= configs.lim_x[0]) and (x <= configs.lim_x[1]) and (y >= configs.lim_y[0]) and (y <= configs.lim_y[1])
+              and (z >= configs.lim_z[0]) and (z <= configs.lim_z[1])):            
             ## step 4 : append the current object to the 'objects' array
                 objects.append([1, x, y, z, h, w, l, -yaw])
         
