@@ -61,7 +61,6 @@ class Track:
 
         # position estimated by converting first measurement from sensor to vehicle coordinate system
         self.P = np.zeros((6, 6))
-        M_rot = meas.sensor.sens_to_veh[0:3, 0:3]
         self.P[0:3, 0:3]  = M_rot * meas.R * np.transpose(M_rot)
 
         # velocity estimation error covariance
@@ -130,11 +129,9 @@ class Trackmanagement:
             if meas_list: # if not empty
                 if meas_list[0].sensor.in_fov(track.x):
                     track.score -= 1./params.window
-                    pass 
-
         # delete old tracks   
         #set the lower threshold as for new tracks the score can increase slowly
-        init_delete_th= 0.17
+        init_delete_th= 0.1
         for track in self.track_list:
             if track.state == 'confirmed':
                 if track.score < params.delete_threshold or \
