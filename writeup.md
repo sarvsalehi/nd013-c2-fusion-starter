@@ -6,6 +6,7 @@ the state vector of EKF includes 3D position and 3D velocity. the observation mo
 The result is following:
 
 ![track1](https://user-images.githubusercontent.com/125278855/227711996-1cc96abb-94cf-4bce-ac12-8b85fae73cf3.png)
+![rmse](https://user-images.githubusercontent.com/125278855/227715078-6e6821ce-d1ea-44e9-989f-a51573e2e06d.png)
 
 ### 2. In the second step track management is implemented to initialize a track state and covariance based on its first associated measurement then assign the track score. Additionally the transition between initialized, tentative, confirmed for each track was implemented choosing threshold on score and covariance values on x, y.
 The following is the results of my experiments with two different threshold on track score for deletion of tracks. the first init threshold of 0.17 resulted not confirming any track:
